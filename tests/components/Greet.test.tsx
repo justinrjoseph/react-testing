@@ -2,6 +2,8 @@ import { render, screen } from '@testing-library/react';
 
 import Greet from '../../src/components/Greet';
 
+import { getHeading } from '../shared/helpers';
+
 describe('Greet', () => {
   describe('should render <x>', () => {
     it('<message>', () => {
@@ -9,9 +11,7 @@ describe('Greet', () => {
 
       render(<Greet name={name} />);
 
-      const el = screen.getByRole('heading');
-
-      expect(el).toHaveTextContent(new RegExp(name, 'i'));
+      expect(getHeading()).toHaveTextContent(new RegExp(name, 'i'));
     });
 
     it('<login button>', () => {

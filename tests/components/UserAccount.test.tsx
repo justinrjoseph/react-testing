@@ -3,13 +3,15 @@ import { render, screen } from '@testing-library/react';
 import UserAccount from '../../src/components/UserAccount';
 import { User } from '../../src/entities';
 
+import { queryBtn } from '../shared/helpers';
+
 describe('UserAccount', () => {
   function mockUser({ isAdmin = false } = {}):User {
     return { name: 'Justin', isAdmin } as User;
   }
 
   function queryEditBtn():HTMLButtonElement {
-    return screen.queryByRole('button') as HTMLButtonElement;
+    return queryBtn() as HTMLButtonElement;
   }
 
   describe('should render <x>', () => {
@@ -26,9 +28,7 @@ describe('UserAccount', () => {
     it('<Edit button for admin users>', () => {
       render(<UserAccount user={mockUser({ isAdmin: true })} />)
 
-      const el = queryEditBtn();
-
-      expect(el).toHaveTextContent(/edit/i);
+      expect(queryEditBtn()).toHaveTextContent(/edit/i);
     });
   });
 

@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 
 import TermsAndConditions from '../../src/components/TermsAndConditions';
 
-import { mockUserEvent, queryBtn } from '../shared/helpers';
+import { getHeading, mockUserEvent, queryBtn } from '../shared/helpers';
 
 describe('TermsAndConditions', () => {
   beforeEach(() => render(<TermsAndConditions />));
@@ -12,7 +12,7 @@ describe('TermsAndConditions', () => {
   }
 
   it('should render with heading and initial state', () => {
-    expect(screen.getByRole('heading')).toHaveTextContent('Terms & Conditions');
+    expect(getHeading()).toHaveTextContent('Terms & Conditions');
 
     expect(queryCheckbox()).not.toBeChecked();
 
