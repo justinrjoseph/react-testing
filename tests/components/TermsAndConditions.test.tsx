@@ -1,17 +1,14 @@
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 
 import TermsAndConditions from '../../src/components/TermsAndConditions';
+
+import { mockUserEvent, queryBtn } from '../shared/helpers';
 
 describe('TermsAndConditions', () => {
   beforeEach(() => render(<TermsAndConditions />));
 
   function queryCheckbox():HTMLInputElement {
     return screen.getByRole('checkbox') as HTMLInputElement;
-  }
-
-  function queryBtn():HTMLButtonElement {
-    return screen.getByRole('button') as HTMLButtonElement;
   }
 
   it('should render with heading and initial state', () => {
@@ -23,9 +20,7 @@ describe('TermsAndConditions', () => {
   });
 
   it('should enable the button when the checkbox is checked', async () => {
-    const user = userEvent.setup();
-
-    await user.click(queryCheckbox());
+    await mockUserEvent().click(queryCheckbox());
 
     expect(queryBtn()).toBeEnabled();
   });
