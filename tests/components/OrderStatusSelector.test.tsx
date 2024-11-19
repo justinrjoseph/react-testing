@@ -12,7 +12,7 @@ describe('OrderStatusSelector', () => {
 
   describe('should render <x>', () => {
     function getCombobox(): HTMLElement {
-      return screen.getByRole('combobox') as HTMLElement;
+      return screen.getByRole('combobox');
     }
 
     async function openCombobox(): Promise<void> {
@@ -49,7 +49,7 @@ describe('OrderStatusSelector', () => {
       async function getOption(value: string): Promise<HTMLElement> {
         return await screen.findByRole('option', {
           name: new RegExp(value, 'i')
-        }) as HTMLElement;
+        });
       }
 
       it('<new>', async () => {

@@ -9,7 +9,7 @@ describe('SearchBox', () => {
   let onChangeMock:Mock;
 
   function getInput(): HTMLInputElement {
-    return screen.getByPlaceholderText(/search/i) as HTMLInputElement;
+    return screen.getByPlaceholderText(/search/i);
   }
 
   beforeEach(() => {

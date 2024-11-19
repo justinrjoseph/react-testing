@@ -8,7 +8,7 @@ describe('TermsAndConditions', () => {
   beforeEach(() => render(<TermsAndConditions />));
 
   function queryCheckbox(): HTMLInputElement {
-    return screen.getByRole('checkbox') as HTMLInputElement;
+    return screen.getByRole('checkbox');
   }
 
   it('should render with heading and initial state', () => {

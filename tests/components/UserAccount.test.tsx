@@ -11,7 +11,7 @@ describe('UserAccount', () => {
   }
 
   function queryEditBtn(): HTMLButtonElement {
-    return queryBtn() as HTMLButtonElement;
+    return queryBtn();
   }
 
   describe('should render <x>', () => {
