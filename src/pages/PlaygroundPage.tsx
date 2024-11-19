@@ -1,8 +1,12 @@
-// import Onboarding from "../components/Onboarding";
-import ExpandableText from "../components/ExpandableText";
+import { Toaster } from "react-hot-toast";
+
+import ToastDemo from "../components/ToastDemo";
 
 const PlaygroundPage = () => {
-  return <ExpandableText text="short text" />;
+  return <>
+    <ToastDemo />
+    <Toaster />
+  </>;
 };
 
 export default PlaygroundPage;
