@@ -7,7 +7,7 @@ import { getHeading, mockUserEvent, queryBtn } from '../shared/helpers';
 describe('TermsAndConditions', () => {
   beforeEach(() => render(<TermsAndConditions />));
 
-  function queryCheckbox():HTMLInputElement {
+  function queryCheckbox(): HTMLInputElement {
     return screen.getByRole('checkbox') as HTMLInputElement;
   }
 

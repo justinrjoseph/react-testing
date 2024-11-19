@@ -9,7 +9,7 @@ import { mockUserEvent as mockAppUser, queryBtn } from '../shared/helpers';
 describe('ExpandableText', () => {
   const limit = 255;
 
-  function mockText(numOfChars = limit):string {
+  function mockText(numOfChars = limit): string {
     return 'a'.repeat(numOfChars);
   }
 

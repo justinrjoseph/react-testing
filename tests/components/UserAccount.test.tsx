@@ -6,11 +6,11 @@ import { User } from '../../src/entities';
 import { queryBtn } from '../shared/helpers';
 
 describe('UserAccount', () => {
-  function mockUser({ isAdmin = false } = {}):User {
+  function mockUser({ isAdmin = false } = {}): User {
     return { name: 'Justin', isAdmin } as User;
   }
 
-  function queryEditBtn():HTMLButtonElement {
+  function queryEditBtn(): HTMLButtonElement {
     return queryBtn() as HTMLButtonElement;
   }
 

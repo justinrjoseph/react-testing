@@ -8,7 +8,7 @@ import {mockUserEvent} from '../shared/helpers';
 describe('SearchBox', () => {
   let onChangeMock:Mock;
 
-  function getInput():HTMLInputElement {
+  function getInput(): HTMLInputElement {
     return screen.getByPlaceholderText(/search/i) as HTMLInputElement;
   }
 
@@ -25,7 +25,7 @@ describe('SearchBox', () => {
   describe('should <x> search term', () => {
     const term = 'search';
 
-    async function mockInput({ content = term } = {}):Promise<void> {
+    async function mockInput({ content = term } = {}): Promise<void> {
       await mockUserEvent().type(getInput(), `${content}{enter}`);
     }
 
