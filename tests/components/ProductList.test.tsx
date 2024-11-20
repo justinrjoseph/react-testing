@@ -5,6 +5,7 @@ import { http, HttpResponse } from 'msw';
 import ProductList from '../../src/components/ProductList';
 
 import { server } from '../mocks/server';
+import { findByText } from '../shared/helpers';
 
 describe('ProductList', () => {
   describe('should render <x>', () => {
@@ -21,7 +22,7 @@ describe('ProductList', () => {
 
       render(<ProductList />);
 
-      expect(await screen.findByText(/no products/i)).toBeInTheDocument();
+      expect(await findByText('no products')).toBeInTheDocument();
     });
   });
 });
