@@ -24,5 +24,15 @@ describe('ProductList', () => {
 
       expect(await findByText('no products')).toBeInTheDocument();
     });
+
+    it(`<error> when API call fails`, async () => {
+      server.use(http.get('/products', () => {
+        return new HttpResponse(null, { status: 500 });
+      }));
+
+      render(<ProductList />);
+
+      expect(await findByText('request failed')).toBeInTheDocument();
+    });
   });
 });

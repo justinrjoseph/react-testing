@@ -34,7 +34,7 @@ describe('ProductDetail', () => {
       it('when API call fails', async () => {
         render(<ProductDetail productId={-1} />);
 
-        expect(await findByText('network down')).toBeInTheDocument();
+        expect(await findByText('failed')).toBeInTheDocument();
       });
     });
   });

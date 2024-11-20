@@ -16,7 +16,7 @@ export const handlers = [
   http.get('/products/:id', ({ params }) => {
     const id = +params.id;
 
-    if (id === -1) return new HttpResponse('Network down', { status: 500 });
+    if (id === -1) return HttpResponse.error();
 
     if (!id) return new HttpResponse(null, { status: 404 });
 
