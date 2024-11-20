@@ -7,5 +7,12 @@ export const handlers = [
       { id: 2, name: 'Beauty' },
       { id: 3, name: 'Gardening' },
     ])
+  }),
+  http.get('/products', () => {
+    return HttpResponse.json([
+      { id: 1, name: 'a' },
+      { id: 2, name: 'b' },
+      { id: 3, name: 'c' }
+    ])
   })
 ];
