@@ -64,7 +64,7 @@ describe('ProductDetail', () => {
     });
   });
 
-  describe('should not render loading indicator after', () => {
+  describe('should not render loading indicator after <x>', () => {
     afterEach(async () => {
       renderComponent();
 
