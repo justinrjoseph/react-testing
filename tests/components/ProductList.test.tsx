@@ -5,6 +5,7 @@ import { http, HttpResponse, delay } from 'msw';
 
 import ProductList from '../../src/components/ProductList';
 
+import AllProviders from '../AllProviders';
 import { db } from '../mocks/db';
 import { server } from '../mocks/server';
 import { findByText, mockApiError } from '../shared/helpers';
@@ -23,6 +24,10 @@ describe('ProductList', () => {
 
   afterAll(() => db.product.deleteMany({ where: { id: { in: productIds } } }));
 
+  function renderComponent(): void {
+    render(<ProductList />, { wrapper: AllProviders })
+  }
+
   describe('should render <x>', () => {
     it('<loading indicator>', async () => {
       server.use(http.get(endpoint, async () => {
@@ -30,13 +35,13 @@ describe('ProductList', () => {
         return HttpResponse.json([]);
       }));
 
-      render(<ProductList />);
+      renderComponent();
 
       expect(await findByText('loading')).toBeInTheDocument();
     });
 
     it('<list of products>', async () => {
-      render(<ProductList />);
+      renderComponent();
 
       const items = await screen.findAllByRole('listitem');
 
@@ -46,7 +51,7 @@ describe('ProductList', () => {
     it('<messaging when no products available>', async () => {
       server.use(http.get(endpoint, () => HttpResponse.json([])));
 
-      render(<ProductList />);
+      renderComponent();
 
       expect(await findByText('no products')).toBeInTheDocument();
     });
@@ -54,7 +59,7 @@ describe('ProductList', () => {
     it(`<error> when API call fails`, async () => {
       mockApiError(endpoint);
 
-      render(<ProductList />);
+      renderComponent();
 
       expect(await findByText('error')).toBeInTheDocument();
     });
@@ -62,7 +67,7 @@ describe('ProductList', () => {
 
   describe('should not render loading indicator after <x>', () => {
     afterEach(async () => {
-      render(<ProductList />);
+      renderComponent();
 
       await waitForElementToBeRemoved(() => screen.queryByText(/loading/i));
     });
