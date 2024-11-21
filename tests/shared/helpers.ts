@@ -1,6 +1,10 @@
 import { screen } from '@testing-library/react';
 import userEvent, { UserEvent } from '@testing-library/user-event';
 
+import { http, HttpResponse } from 'msw';
+
+import { server } from '../mocks/server';
+
 export function getHeading(): HTMLHeadingElement {
   return screen.getByRole('heading');
 }
@@ -15,4 +19,8 @@ export function findByText(content: string): Promise<HTMLElement> {
 
 export function mockUserEvent(): UserEvent {
   return userEvent.setup();
+}
+
+export function mockApiError(endpoint: string):void {
+  server.use(http.get(endpoint, () => HttpResponse.error()))
 }
