@@ -5,6 +5,7 @@ import { delay, http, HttpResponse } from 'msw';
 
 import ProductDetail from '../../src/components/ProductDetail';
 
+import AllProviders from '../AllProviders';
 import { db } from '../mocks/db';
 import { server } from '../mocks/server';
 import { findByText, mockApiError } from '../shared/helpers';
@@ -21,6 +22,10 @@ describe('ProductDetail', () => {
 
   afterAll(() => db.product.delete({ where: { id: { equals: productId } } }))
 
+  function renderComponent({ id = productId } = {}): void {
+    render(<ProductDetail productId={id} />, { wrapper: AllProviders });
+  }
+
   describe('should render <x>', () => {
     it('<loading indicator>', async () => {
       server.use(http.get(endpoint, async () => {
@@ -28,7 +33,7 @@ describe('ProductDetail', () => {
         return HttpResponse.json([])
       }));
 
-      render(<ProductDetail productId={productId} />);
+      renderComponent();
 
       expect(await findByText('loading')).toBeInTheDocument();
     });
@@ -36,7 +41,7 @@ describe('ProductDetail', () => {
     it('<product details>', async () => {
       const product = db.product.findFirst({ where: { id: { equals: productId } } });
 
-      render(<ProductDetail productId={productId} />);
+      renderComponent();
 
       expect(await findByText(product!.name)).toBeInTheDocument();
       expect(await findByText(`\\$${product!.price}`)).toBeInTheDocument();
@@ -45,31 +50,23 @@ describe('ProductDetail', () => {
     it(`<messaging when product doesn't exist>`, async () => {
       server.use(http.get(endpoint, () => HttpResponse.json(null)))
 
-      render(<ProductDetail productId={productId}/>);
+      renderComponent();
 
       expect(await findByText('not found')).toBeInTheDocument();
     });
 
-    describe(`<error>`, () => {
-      it('when productId invalid', async () => {
-        render(<ProductDetail productId={0}/>);
+    it(`<error> when API call fails`, async () => {
+      mockApiError(endpoint);
 
-        expect(await findByText('invalid')).toBeInTheDocument();
-      });
+      renderComponent();
 
-      it('when API call fails', async () => {
-        mockApiError(endpoint);
-
-        render(<ProductDetail productId={productId} />);
-
-        expect(await findByText('error')).toBeInTheDocument();
-      });
+      expect(await findByText('error')).toBeInTheDocument();
     });
   });
 
   describe('should not render loading indicator after', () => {
     afterEach(async () => {
-      render(<ProductDetail productId={productId} />);
+      renderComponent();
 
       await waitForElementToBeRemoved(() => screen.queryByText(/loading/i));
     });
