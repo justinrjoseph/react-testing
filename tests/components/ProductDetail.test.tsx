@@ -20,7 +20,7 @@ describe('ProductDetail', () => {
     endpoint = `/products/${productId}`;
   });
 
-  afterAll(() => db.product.delete({ where: { id: { equals: productId } } }))
+  afterAll(() => db.product.delete({ where: { id: { equals: productId } } }));
 
   function renderComponent({ id = productId } = {}): void {
     render(<ProductDetail productId={id} />, { wrapper: AllProviders });
