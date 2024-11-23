@@ -9,12 +9,24 @@ import { server } from '../mocks/server';
 import { mockApiError } from '../shared/helpers';
 
 describe('BrowseProductsPage', () => {
-  function renderComponent():void {
+  function mockCategories(): void {
+    server.use(http.get('/categories', () => HttpResponse.json([])));
+  }
+
+  function renderComponent(): void {
     render(
       <Theme>
         <BrowseProducts />
       </Theme>
     );
+  }
+
+  function queryCategoriesSkeleton(): HTMLElement | null {
+    return screen.queryByRole('progressbar', { name: /categories/i })
+  }
+
+  function queryProductsSkeleton(): HTMLElement | null {
+    return screen.queryByRole('progressbar', { name: /products/i })
   }
 
   describe('should render <x>', () => {
@@ -43,17 +55,9 @@ describe('BrowseProductsPage', () => {
   });
 
   describe('should not render loading skeletons after <x>', () => {
-    function queryCategoriesSkeleton():HTMLElement | null {
-      return screen.queryByRole('progressbar', { name: /categories/i })
-    }
-
-    function queryProductsSkeleton():HTMLElement | null {
-      return screen.queryByRole('progressbar', { name: /products/i })
-    }
-
     describe('<y> loaded', () => {
       beforeEach(() => {
-        server.use(http.get('/categories', () => HttpResponse.json([])));
+        mockCategories();
 
         renderComponent();
       });
@@ -74,5 +78,27 @@ describe('BrowseProductsPage', () => {
       expect(queryCategoriesSkeleton()).not.toBeInTheDocument();
       expect(queryProductsSkeleton()).not.toBeInTheDocument();
     });
+  });
+
+  it('should not render error if request for categories fails', async () => {
+    mockApiError('/categories');
+
+    renderComponent();
+
+    await waitForElementToBeRemoved(() => queryCategoriesSkeleton());
+
+    expect(screen.queryByText(/error/i)).not.toBeInTheDocument();
+    expect(screen.queryByRole('combobox', { name: /category/i })).not.toBeInTheDocument();
+  });
+
+  it('should render error if request for products fails', async () => {
+    mockCategories();
+    mockApiError('/products');
+
+    renderComponent();
+
+    await waitForElementToBeRemoved(() => queryProductsSkeleton());
+
+    expect(await screen.findByText(/error/i)).toBeInTheDocument();
   });
 });
