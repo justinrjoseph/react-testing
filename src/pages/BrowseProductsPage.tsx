@@ -1,62 +1,22 @@
-import { Select, Table } from "@radix-ui/themes";
+import { Table } from "@radix-ui/themes";
 import axios from "axios";
 import { useQuery } from "react-query";
 import { useState } from "react";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import QuantitySelector from "../components/QuantitySelector";
-import { Category, Product } from "../entities";
+import { Product } from "../entities";
+import CategorySelect from "../components/CategorySelect";
 
 function BrowseProducts() {
-  const categoriesQuery = useQuery<Category[], Error, Category[]>({
-      queryKey: ['categories'],
-      queryFn: () => axios.get<Category[]>("/categories").then((res) => res.data)
-    });
-
   const productsQuery = useQuery<Product[], Error, Product[]>({
       queryKey: ['products'],
       queryFn: () => axios.get<Product[]>("/products").then((res) => res.data)
     });
 
-  const [selectedCategoryId, setSelectedCategoryId] = useState<
-    number | undefined
-  >();
+  const [selectedCategoryId, setSelectedCategoryId] = useState<number | undefined>();
 
   if (productsQuery.error) return <div>Error: {productsQuery.error.message}</div>;
-
-  const renderCategories = () => {
-    const { isLoading, error, data: categories,  } = categoriesQuery;
-
-    if (isLoading) {
-      return (
-        <p role="progressbar" aria-label="Loading categories">
-          <Skeleton />
-        </p>
-      );
-    }
-    if (error) return null;
-
-    return (
-      <Select.Root
-        onValueChange={(categoryId) =>
-          setSelectedCategoryId(parseInt(categoryId))
-        }
-      >
-        <Select.Trigger placeholder="Filter by Category" />
-        <Select.Content>
-          <Select.Group>
-            <Select.Label>Category</Select.Label>
-            <Select.Item value="all">All</Select.Item>
-            {categories?.map((category) => (
-              <Select.Item key={category.id} value={category.id.toString()}>
-                {category.name}
-              </Select.Item>
-            ))}
-          </Select.Group>
-        </Select.Content>
-      </Select.Root>
-    );
-  };
 
   const renderProducts = () => {
     const { error, data: products, isLoading } = productsQuery;
@@ -111,7 +71,9 @@ function BrowseProducts() {
   return (
     <div>
       <h1>Products</h1>
-      <div className="max-w-xs">{renderCategories()}</div>
+      <div className="max-w-xs">
+        {<CategorySelect selectCategoryId={(id) => setSelectedCategoryId(id)} />}
+      </div>
       {renderProducts()}
     </div>
   );
