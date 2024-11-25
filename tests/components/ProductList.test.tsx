@@ -8,7 +8,7 @@ import ProductList from '../../src/components/ProductList';
 import AllProviders from '../AllProviders';
 import { db } from '../mocks/db';
 import { server } from '../mocks/server';
-import { findByText, mockApiError } from '../shared/helpers';
+import { findByText, mockApiError, mockEmptyResponse } from '../shared/helpers';
 
 describe('ProductList', () => {
   let productIds: number[] = [];
@@ -49,7 +49,7 @@ describe('ProductList', () => {
     });
 
     it('<messaging when no products available>', async () => {
-      server.use(http.get(endpoint, () => HttpResponse.json([])));
+      mockEmptyResponse(endpoint);
 
       renderComponent();
 

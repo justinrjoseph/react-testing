@@ -17,8 +17,20 @@ export function findByText(content: string): Promise<HTMLElement> {
   return screen.findByText(new RegExp(content, 'i'));
 }
 
+export function queryCombobox(): HTMLElement | null {
+  return screen.queryByRole('combobox');
+}
+
+export async function openCombobox(): Promise<void> {
+  await mockUserEvent().click(queryCombobox()!);
+}
+
 export function mockUserEvent(): UserEvent {
   return userEvent.setup();
+}
+
+export function mockEmptyResponse(endpoint: string): void {
+  server.use(http.get(endpoint, () => HttpResponse.json([])));
 }
 
 export function mockApiError(endpoint: string):void {

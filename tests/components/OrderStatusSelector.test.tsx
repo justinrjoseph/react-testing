@@ -5,20 +5,12 @@ import { Mock } from 'vitest';
 
 import OrderStatusSelector from '../../src/components/OrderStatusSelector';
 
-import { mockUserEvent } from '../shared/helpers';
+import { mockUserEvent, openCombobox, queryCombobox } from '../shared/helpers';
 
 describe('OrderStatusSelector', () => {
   let onChangeMock:Mock;
 
   describe('should render <x>', () => {
-    function getCombobox(): HTMLElement {
-      return screen.getByRole('combobox');
-    }
-
-    async function openCombobox(): Promise<void> {
-      await mockUserEvent().click(getCombobox());
-    }
-
     beforeEach(() => {
       onChangeMock = vi.fn();
 
@@ -30,7 +22,7 @@ describe('OrderStatusSelector', () => {
     });
 
     it('<New as the default value>', () => {
-      expect(getCombobox()).toHaveTextContent(/new/i);
+      expect(queryCombobox()).toHaveTextContent(/new/i);
     });
 
     it('<correct statuses>', async () => {

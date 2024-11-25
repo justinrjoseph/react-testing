@@ -1,23 +1,59 @@
+import { faker } from '@faker-js/faker';
 import { Theme } from '@radix-ui/themes';
 import { render, screen, waitForElementToBeRemoved } from '@testing-library/react';
 
-import { delay, http, HttpResponse, JsonBodyType, StrictResponse } from 'msw';
+import { delay, http, HttpResponse } from 'msw';
 
+import { Category, Product } from '../../src/entities';
 import BrowseProducts from '../../src/pages/BrowseProductsPage';
+import { CartProvider } from '../../src/providers/CartProvider';
 
+import { db } from '../mocks/db';
 import { server } from '../mocks/server';
-import { mockApiError } from '../shared/helpers';
+import { mockApiError, mockEmptyResponse, mockUserEvent, openCombobox, queryCombobox } from '../shared/helpers';
 
 describe('BrowseProductsPage', () => {
-  function mockCategories(): void {
-    server.use(http.get('/categories', () => HttpResponse.json([])));
-  }
+  let categories: Category[] = [];
+  let products: Product[] = [];
+
+  beforeAll(() => {
+    [1, 2, 3].forEach(() => {
+      const category = db.category.create();
+      const duplicateCategory = categories.find((item) => item.name === category.name);
+
+      if (duplicateCategory) {
+        const updatedCategory = db.category.update({
+          where: { id: { equals: category.id } },
+          data: { name: () => faker.commerce.department() }
+        });
+        categories = [...categories, updatedCategory!];
+      }
+      else {
+        categories = [...categories, category];
+      }
+
+      [1, 2].forEach(() => {
+        const product = db.product.create({ categoryId: category.id });
+        products = [...products, product];
+      });
+    });
+  });
+
+  afterAll(() => {
+    const categoryIds = categories.map(({ id }) => id);
+    db.category.deleteMany({ where: { id: { in: categoryIds } } });
+
+    const productIds = products.map(({ id }) => id);
+    db.product.deleteMany({ where: { id: { in: productIds } } });
+  });
 
   function renderComponent(): void {
     render(
-      <Theme>
-        <BrowseProducts />
-      </Theme>
+      <CartProvider>
+        <Theme>
+          <BrowseProducts />
+        </Theme>
+      </CartProvider>
     );
   }
 
@@ -31,25 +67,57 @@ describe('BrowseProductsPage', () => {
 
   describe('should render <x>', () => {
     describe('<loading skeletons> for <y>', () => {
-      const delayedResponse = async (): Promise<StrictResponse<JsonBodyType>> => {
-        await delay();
-        return HttpResponse.json([]);
+      function mockApiDelay(endpoint: 'categories' | 'products'): void {
+        server.use(http.get(`/${endpoint}`, async () => {
+          await delay();
+          return HttpResponse.json([]);
+        }));
+      }
+
+      function getProgressBar(target: 'categories' | 'products'): HTMLElement {
+        return screen.getByRole('progressbar', { name: new RegExp(target, 'i') });
       }
 
       it('<categories>', () => {
-        server.use(http.get('/categories', async () => delayedResponse()));
+        mockApiDelay('categories');
 
         renderComponent();
 
-        expect(screen.getByRole('progressbar', { name: /categories/i })).toBeInTheDocument();
+        expect(getProgressBar('categories')).toBeInTheDocument();
       });
 
-      it.skip('<products>', () => {
-        server.use(http.get('/products', async () => delayedResponse()));
+      it('<products>', () => {
+        mockApiDelay('products');
 
         renderComponent();
 
-        expect(screen.getByRole('progressbar', { name: /products/i })).toBeInTheDocument();
+        expect(getProgressBar('products')).toBeInTheDocument();
+      });
+    });
+
+    it('<categories>', async () => {
+      renderComponent();
+
+      await waitForElementToBeRemoved(queryCategoriesSkeleton);
+
+      await openCombobox();
+
+      const options = await screen.findAllByRole('option');
+
+      const labels = options.map((item) => item.textContent);
+
+      expect(labels).toEqual(['All', ...categories.map(({ name }) => name)]);
+    });
+
+    it('<products>', async () => {
+      renderComponent();
+
+      await waitForElementToBeRemoved(() => queryProductsSkeleton());
+
+      products.forEach((item) => {
+        expect(screen.getByText(item.name)).toBeInTheDocument();
+        expect(screen.getAllByText(new RegExp(item.price.toString())).length)
+        .toBeGreaterThanOrEqual(1);
       });
     });
   });
@@ -57,17 +125,17 @@ describe('BrowseProductsPage', () => {
   describe('should not render loading skeletons after <x>', () => {
     describe('<y> loaded', () => {
       beforeEach(() => {
-        mockCategories();
+        mockEmptyResponse('/categories');
 
         renderComponent();
       });
 
       it('<categories>', async () => {
-        await waitForElementToBeRemoved(() => queryCategoriesSkeleton());
+        await waitForElementToBeRemoved(queryCategoriesSkeleton);
       });
 
       it('<products>', async () => {
-        await waitForElementToBeRemoved(() => queryProductsSkeleton());
+        await waitForElementToBeRemoved(queryProductsSkeleton);
       });
     });
 
@@ -85,20 +153,61 @@ describe('BrowseProductsPage', () => {
 
     renderComponent();
 
-    await waitForElementToBeRemoved(() => queryCategoriesSkeleton());
+    await waitForElementToBeRemoved(queryCategoriesSkeleton);
 
     expect(screen.queryByText(/error/i)).not.toBeInTheDocument();
-    expect(screen.queryByRole('combobox', { name: /category/i })).not.toBeInTheDocument();
+    expect(queryCombobox()).not.toBeInTheDocument();
   });
 
   it('should render error if request for products fails', async () => {
-    mockCategories();
+    mockEmptyResponse('/categories');
     mockApiError('/products');
 
     renderComponent();
 
-    await waitForElementToBeRemoved(() => queryProductsSkeleton());
+    await waitForElementToBeRemoved(queryProductsSkeleton);
 
     expect(await screen.findByText(/error/i)).toBeInTheDocument();
+  });
+
+  describe('--- filter-related', () => {
+    async function selectCategory(label: string): Promise<void> {
+      await openCombobox();
+
+      const option = screen.getByRole('option', { name: new RegExp(label, 'i') });
+      await mockUserEvent().click(option);
+    }
+
+    function validateDisplayOfProducts(items: Product[]): void {
+      const dataRows = screen.getAllByRole('row').slice(1);
+
+      expect(dataRows.length).toBe(items.length);
+
+      items.forEach(({ name }) => expect(screen.queryByText(name)).toBeInTheDocument());
+    }
+
+    beforeEach(async () => {
+      const [{ name }] = categories;
+
+      renderComponent();
+
+      await waitForElementToBeRemoved(queryProductsSkeleton);
+
+      await selectCategory(name);
+    });
+
+    it('should filter products by category', () => {
+      const [{ id }] = categories;
+
+      validateDisplayOfProducts(db.product.findMany({
+        where: { categoryId: { equals: id } }
+      }));
+    });
+
+    it('should re-render all products', async () => {
+      await selectCategory('all');
+
+      validateDisplayOfProducts(products);
+    });
   });
 });
