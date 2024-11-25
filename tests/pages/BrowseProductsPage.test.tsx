@@ -1,13 +1,12 @@
 import { faker } from '@faker-js/faker';
-import { Theme } from '@radix-ui/themes';
 import { render, screen, waitForElementToBeRemoved } from '@testing-library/react';
 
 import { delay, http, HttpResponse } from 'msw';
 
 import { Category, Product } from '../../src/entities';
 import BrowseProducts from '../../src/pages/BrowseProductsPage';
-import { CartProvider } from '../../src/providers/CartProvider';
 
+import AllProviders from '../AllProviders';
 import { db } from '../mocks/db';
 import { server } from '../mocks/server';
 import { mockApiError, mockEmptyResponse, mockUserEvent, openCombobox, queryCombobox } from '../shared/helpers';
@@ -48,13 +47,7 @@ describe('BrowseProductsPage', () => {
   });
 
   function renderComponent(): void {
-    render(
-      <CartProvider>
-        <Theme>
-          <BrowseProducts />
-        </Theme>
-      </CartProvider>
-    );
+    render(<BrowseProducts />, { wrapper: AllProviders });
   }
 
   function queryCategoriesSkeleton(): HTMLElement | null {
