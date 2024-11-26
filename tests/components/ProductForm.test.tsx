@@ -33,6 +33,12 @@ describe('ProductForm', () => {
     expect(getCategoriesDropdown()).toBeInTheDocument();
   });
 
+  it('should focus first input', async () => {
+    await renderComponent();
+
+    expect(getNameInput()).toHaveFocus();
+  });
+
   it('should pre-fill inputs when product being edited', async () => {
     const category = db.category.create();
     const { id: categoryId } = category;
