@@ -100,50 +100,56 @@ describe('ProductForm', () => {
       expect(screen.getByRole('alert')).toHaveTextContent(error);
     }
 
-    it.each([
-      {
-        scenario: 'is missing',
-        error: /name|required/i,
-      },
-      {
-        scenario: 'exceeds max length',
-        name: name.repeat(256),
-        error: /name|character\(s\)/i,
-      }
-    ])('should render an error if name $scenario', async ({ name, error }) => {
-      await fillOutAndSubmitForm({ name, price });
+    describe('should render an error if <x> <y>', () => {
+      describe('<x: name>', () => {
+        it.each([
+          {
+            scenario: 'is missing',
+            error: /name|required/i,
+          },
+          {
+            scenario: 'exceeds max length',
+            name: name.repeat(256),
+            error: /name|character\(s\)/i,
+          }
+        ])('<y: $scenario>', async ({ name, error }) => {
+          await fillOutAndSubmitForm({ name, price });
 
-      validateDisplayOfError(error);
-    });
+          validateDisplayOfError(error);
+        });
+      });
 
-    it.each([
-      {
-        scenario: 'is missing',
-        error: /price|required/i,
-      },
-      {
-        scenario: 'is not a number',
-        error: /price|required/i,
-      },
-      {
-        scenario: 'is 0',
-        price: '0',
-        error: /greater|equal|1/i,
-      },
-      {
-        scenario: 'is negative',
-        price: '-1',
-        error: /greater|equal|1/i,
-      },
-      {
-        scenario: 'exceeds 1000',
-        price: '1001',
-        error: /less than|equal|1000/i,
-      }
-    ])('should render an error if price $scenario', async ({ price, error }) => {
-      await fillOutAndSubmitForm({ name, price });
+      describe('<x: price>', () => {
+        it.each([
+          {
+            scenario: 'is missing',
+            error: /price|required/i,
+          },
+          {
+            scenario: 'is not a number',
+            error: /price|required/i,
+          },
+          {
+            scenario: 'is 0',
+            price: '0',
+            error: /greater|equal|1/i,
+          },
+          {
+            scenario: 'is negative',
+            price: '-1',
+            error: /greater|equal|1/i,
+          },
+          {
+            scenario: 'exceeds 1000',
+            price: '1001',
+            error: /less than|equal|1000/i,
+          }
+        ])('<y: $scenario>', async ({ price, error }) => {
+          await fillOutAndSubmitForm({ name, price });
 
-      validateDisplayOfError(error);
+          validateDisplayOfError(error);
+        });
+      });
     });
   });
 

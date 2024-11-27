@@ -56,7 +56,7 @@ describe('OrderStatusSelector', () => {
         expect(onChangeMock).toHaveBeenCalledWith('new');
       });
 
-      it.each(['processed', 'fulfilled'])('<$value>', async (value) => {
+      it.each(['processed', 'fulfilled'])('<%s>', async (value) => {
         const option = await getOption(value);
 
         await mockUserEvent().click(option);

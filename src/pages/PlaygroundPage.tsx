@@ -1,7 +1,7 @@
-import ProductForm from "../components/ProductForm";
+import Label from "../components/Label";
 
 const PlaygroundPage = () => {
-  return <ProductForm />;
+  return <Label labelId="welcome" />;
 };
 
 export default PlaygroundPage;
