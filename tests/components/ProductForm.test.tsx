@@ -74,6 +74,7 @@ describe('ProductForm', () => {
       name && await userEvent.type(getNameInput(), name);
       price && await userEvent.type(getPriceInput(), price);
 
+      await userEvent.tab();
       await openCombobox();
 
       const options = screen.getAllByRole('option');
