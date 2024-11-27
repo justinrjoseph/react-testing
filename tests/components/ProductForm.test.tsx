@@ -174,4 +174,30 @@ describe('ProductForm', () => {
       expect(screen.getByRole('status')).toHaveTextContent(/unexpected error/i);
     });
   });
+
+  describe('should <x> submit button post-submission', () => {
+    it('<disable>', async () => {
+      onSubmitMock.mockReturnValue(new Promise(() => {}));
+
+      await fillOutAndSubmitForm({ name, price });
+
+      expect(queryBtn()).toBeDisabled();
+    });
+
+    describe('<re-enable>', () => {
+      afterEach(async () => {
+        await fillOutAndSubmitForm({ name, price });
+
+        expect(queryBtn()).toBeEnabled();
+      });
+
+      it('which succeeded', () => {
+        onSubmitMock.mockReturnValue({});
+      });
+
+      it('which failed', () => {
+        onSubmitMock.mockRejectedValue({});
+      });
+    });
+  });
 });
