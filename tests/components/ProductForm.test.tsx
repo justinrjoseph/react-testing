@@ -96,7 +96,7 @@ describe('ProductForm', () => {
   });
 
   describe('--- validation-related ---', () => {
-    function validateDisplayOfError(error: RegExp): void {
+    function validateError(error: RegExp): void {
       expect(screen.getByRole('alert')).toHaveTextContent(error);
     }
 
@@ -115,7 +115,7 @@ describe('ProductForm', () => {
         ])('<y: $scenario>', async ({ name, error }) => {
           await fillOutAndSubmitForm({ name, price });
 
-          validateDisplayOfError(error);
+          validateError(error);
         });
       });
 
@@ -147,7 +147,7 @@ describe('ProductForm', () => {
         ])('<y: $scenario>', async ({ price, error }) => {
           await fillOutAndSubmitForm({ name, price });
 
-          validateDisplayOfError(error);
+          validateError(error);
         });
       });
     });

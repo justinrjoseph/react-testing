@@ -22,7 +22,7 @@ describe('QuantitySelector', () => {
     );
   }
 
-  async function addProduct(): Promise<void> {
+  async function addToCart(): Promise<void> {
     await mockUserEvent().click(queryBtn());
   }
 
@@ -46,20 +46,20 @@ describe('QuantitySelector', () => {
     await mockUserEvent().click(getIncrementBtn());
   }
 
-  function validateDisplayOfAddBtn(): void {
+  function validateAddBtnInDocument(): void {
     expect(screen.queryByRole('button', { name: /add/i })).toBeInTheDocument();
   }
 
   it('should render button for adding product to cart', () => {
     renderComponent({} as Product);
 
-    validateDisplayOfAddBtn();
+    validateAddBtnInDocument();
   });
 
   it('should add product to cart', async () => {
     renderComponent();
 
-    await addProduct();
+    await addToCart();
 
     expect(getDecrementBtn()).toBeInTheDocument();
     expect(getQuantity()).toHaveTextContent('1');
@@ -70,7 +70,7 @@ describe('QuantitySelector', () => {
     it('<increment>', async () => {
       renderComponent();
 
-      await addProduct();
+      await addToCart();
       await incrementQuantity();
 
       expect(getQuantity()).toHaveTextContent('2');
@@ -79,7 +79,7 @@ describe('QuantitySelector', () => {
     it('<decrement>', async () => {
       renderComponent();
 
-      await addProduct();
+      await addToCart();
       await incrementQuantity();
       await decrementQuantity();
 
@@ -90,9 +90,9 @@ describe('QuantitySelector', () => {
   it('should remove product from cart', async () => {
     renderComponent();
 
-    await addProduct();
+    await addToCart();
     await decrementQuantity();
 
-    validateDisplayOfAddBtn();
+    validateAddBtnInDocument();
   });
 });

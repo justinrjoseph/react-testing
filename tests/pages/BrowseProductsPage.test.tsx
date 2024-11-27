@@ -171,7 +171,7 @@ describe('BrowseProductsPage', () => {
       await mockUserEvent().click(option);
     }
 
-    function validateDisplayOfProducts(items: Product[]): void {
+    function validateProductsInDocument(items: Product[]): void {
       const dataRows = screen.getAllByRole('row').slice(1);
 
       expect(dataRows.length).toBe(items.length);
@@ -192,7 +192,7 @@ describe('BrowseProductsPage', () => {
     it('should filter products by category', () => {
       const [{ id }] = categories;
 
-      validateDisplayOfProducts(db.product.findMany({
+      validateProductsInDocument(db.product.findMany({
         where: { categoryId: { equals: id } }
       }));
     });
@@ -200,7 +200,7 @@ describe('BrowseProductsPage', () => {
     it('should re-render all products', async () => {
       await selectCategory('all');
 
-      validateDisplayOfProducts(products);
+      validateProductsInDocument(products);
     });
   });
 });
