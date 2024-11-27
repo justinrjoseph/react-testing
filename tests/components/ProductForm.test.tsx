@@ -1,5 +1,7 @@
 import { render, screen } from '@testing-library/react';
 
+import toast, {Toaster} from 'react-hot-toast';
+
 import ProductForm from '../../src/components/ProductForm';
 import { Category, Product } from '../../src/entities';
 
@@ -10,6 +12,11 @@ import { mockUserEvent, openCombobox, queryBtn } from '../shared/helpers';
 describe('ProductForm', () => {
   let category: Category;
   let product: Product;
+
+  const name = 'a';
+  const price = '10';
+
+  const onSubmitMock = vi.fn();
 
   beforeAll(() => {
     category = db.category.create();
@@ -24,9 +31,34 @@ describe('ProductForm', () => {
   });
 
   async function renderComponent(product?: Product): Promise<void> {
-    render(<ProductForm product={product} onSubmit={vi.fn()} />, { wrapper: AllProviders });
+    render(
+      <>
+        <ProductForm product={product} onSubmit={onSubmitMock} />
+        <Toaster />
+      </>
+    , { wrapper: AllProviders });
 
     await screen.findByRole('form');
+  }
+
+  type FormData = { [K in keyof Partial<Product>]: string }
+
+  async function fillOutAndSubmitForm({ name, price }: FormData): Promise<void> {
+    await renderComponent();
+
+    const userEvent = mockUserEvent();
+
+    name && await userEvent.type(getNameInput(), name);
+    price && await userEvent.type(getPriceInput(), price);
+
+    await userEvent.tab();
+    await openCombobox();
+
+    const options = screen.getAllByRole('option');
+
+    await userEvent.click(options.at(0)!);
+
+    await userEvent.click(queryBtn());
   }
 
   function getNameInput(): HTMLElement {
@@ -64,26 +96,6 @@ describe('ProductForm', () => {
   });
 
   describe('--- validation-related ---', () => {
-    type FormData = { [K in keyof Partial<Product>]: string }
-
-    async function fillOutAndSubmitForm({ name, price }: FormData): Promise<void> {
-      await renderComponent();
-
-      const userEvent = mockUserEvent();
-
-      name && await userEvent.type(getNameInput(), name);
-      price && await userEvent.type(getPriceInput(), price);
-
-      await userEvent.tab();
-      await openCombobox();
-
-      const options = screen.getAllByRole('option');
-
-      await userEvent.click(options.at(0)!);
-
-      await userEvent.click(queryBtn());
-    }
-
     function validateDisplayOfError(error: RegExp): void {
       expect(screen.getByRole('alert')).toHaveTextContent(error);
     }
@@ -95,11 +107,11 @@ describe('ProductForm', () => {
       },
       {
         scenario: 'exceeds max length',
-        name: 'a'.repeat(256),
+        name: name.repeat(256),
         error: /name|character\(s\)/i,
       }
     ])('should render an error if name $scenario', async ({ name, error }) => {
-      await fillOutAndSubmitForm({ name, price: '10' });
+      await fillOutAndSubmitForm({ name, price });
 
       validateDisplayOfError(error);
     });
@@ -129,9 +141,37 @@ describe('ProductForm', () => {
         error: /less than|equal|1000/i,
       }
     ])('should render an error if price $scenario', async ({ price, error }) => {
-      await fillOutAndSubmitForm({ name: 'a', price });
+      await fillOutAndSubmitForm({ name, price });
 
       validateDisplayOfError(error);
+    });
+  });
+
+  describe('--- submission-related ---', () => {
+    afterEach(() => {
+      const { id: categoryId } = category;
+
+      expect(onSubmitMock).toHaveBeenCalledWith({
+        name,
+        price: +price,
+        categoryId
+      });
+    });
+
+    it('should submit successfully', async () => {
+      await fillOutAndSubmitForm({ name, price });
+    });
+
+    it('should handle failed submission', async () => {
+      onSubmitMock.mockRejectedValue({});
+
+      vi.spyOn(toast, 'error');
+
+      await fillOutAndSubmitForm({ name, price });
+
+      expect(toast.error).toHaveBeenCalledWith("An unexpected error occurred");
+
+      expect(screen.getByRole('status')).toHaveTextContent(/unexpected error/i);
     });
   });
 });
