@@ -21,6 +21,10 @@ export function getHeading(name?: RegExp | string): HTMLHeadingElement {
   return screen.getByRole('heading', name ? { name } : {});
 }
 
+export async function findHeading(name: RegExp | string): Promise<HTMLElement> {
+  return screen.findByRole('heading', { name });
+}
+
 export function getByPlaceholderText(content: RegExp): HTMLElement {
   return screen.getByPlaceholderText(content);
 }
@@ -33,7 +37,7 @@ export function getStatus(): HTMLElement {
   return screen.getByRole('status');
 }
 
-export function queryByText(content: RegExp): HTMLElement | null {
+export function queryByText(content: RegExp | string): HTMLElement | null {
   return screen.queryByText(content);
 }
 

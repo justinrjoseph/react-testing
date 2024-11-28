@@ -168,7 +168,7 @@ describe('BrowseProductsPage', () => {
 
       expect(dataRows.length).toBe(items.length);
 
-      items.forEach(({ name }) => expect(screen.queryByText(name)).toBeInTheDocument());
+      items.forEach(({ name }) => expect(queryByText(name)).toBeInTheDocument());
     }
 
     beforeEach(async () => {
