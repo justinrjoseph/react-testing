@@ -15,13 +15,17 @@ export function mockCategory(): Entity<{category: Category;}, 'category'> {
 }
 
 export function deleteMockCategories(ids: number[]): void {
-  db.category.deleteMany({where: {id: {in: ids}}});
+  db.category.deleteMany({ where: { id: { in: ids } }});
 }
 
 export function mockProduct(): Entity<{product: Product;}, 'product'> {
   return db.product.create();
 }
 
+export function deleteMockProduct(id: number): void {
+  db.product.delete({ where: { id: { equals: id } } });
+}
+
 export function deleteMockProducts(ids: number[]): void {
-  db.product.deleteMany({where: {id: {in: ids}}});
+  db.product.deleteMany({ where: { id: { in: ids } }});
 }

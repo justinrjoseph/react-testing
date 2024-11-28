@@ -6,7 +6,7 @@ import ProductForm from '../../src/components/ProductForm';
 import { Category, Product } from '../../src/entities';
 
 import AllProviders from '../AllProviders';
-import { mockCategory } from '../helpers/data';
+import { deleteMockProduct, mockCategory } from '../helpers/data';
 import { getByPlaceholderText, getStatus, mockUserEvent, openCombobox, queryBtn } from '../helpers/template';
 import { db } from '../mock-server/db';
 
@@ -28,7 +28,7 @@ describe('ProductForm', () => {
 
   afterAll(() => {
     db.category.delete({ where: { id: { equals: category.id } } });
-    db.product.delete({ where: { id: { equals: product.id } } });
+    deleteMockProduct(product.id);
   });
 
   async function renderComponent(product?: Product): Promise<void> {

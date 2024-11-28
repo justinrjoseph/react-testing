@@ -4,16 +4,15 @@ import QuantitySelector from '../../src/components/QuantitySelector';
 import { Product } from '../../src/entities';
 import { CartProvider } from '../../src/providers/CartProvider';
 
-import { mockProduct } from '../helpers/data';
+import { deleteMockProduct, mockProduct } from '../helpers/data';
 import { getStatus, mockUserEvent, queryBtn } from '../helpers/template';
-import { db } from '../mock-server/db';
 
 describe('QuantitySelector', () => {
   let productMock: Product;
 
   beforeAll(() => productMock = mockProduct());
 
-  afterAll(() => db.product.delete({ where: { id: { equals: productMock.id } } }));
+  afterAll(() => deleteMockProduct(productMock.id));
 
   function renderComponent(product = productMock): void {
     render(

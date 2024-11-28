@@ -7,7 +7,7 @@ import ProductDetail from '../../src/components/ProductDetail';
 
 import AllProviders from '../AllProviders';
 import { mockApiDelay, mockApiError } from '../helpers/api';
-import { mockProduct } from '../helpers/data';
+import { deleteMockProduct, mockProduct } from '../helpers/data';
 import { findByText, queryByText } from '../helpers/template';
 import { db } from '../mock-server/db';
 import { server } from '../mock-server';
@@ -22,7 +22,7 @@ describe('ProductDetail', () => {
     endpoint = `products/${productId}`;
   });
 
-  afterAll(() => db.product.delete({ where: { id: { equals: productId } } }));
+  afterAll(() => deleteMockProduct(productId));
 
   function renderComponent({ id = productId } = {}): void {
     render(<ProductDetail productId={id} />, { wrapper: AllProviders });
