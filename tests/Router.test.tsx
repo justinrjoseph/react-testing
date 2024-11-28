@@ -32,21 +32,27 @@ describe('Router', () => {
 
       expect(getHeading(/products/i)).toBeInTheDocument()
     });
-  });
 
-  it('should render product details page', async () => {
-    const product = mockProduct();
+    it('<product details>, </<id>>', async () => {
+      const product = mockProduct();
 
-    mockNavigation(`products/${product.id}`);
+      mockNavigation(`products/${product.id}`);
 
-    expect(await findHeading(product.name)).toBeInTheDocument();
+      expect(await findHeading(product.name)).toBeInTheDocument();
 
-    deleteMockProduct(product.id);
-  });
+      deleteMockProduct(product.id);
+    });
 
-  it('should render error page for invalid route', async () => {
-    mockNavigation('asdf');
+    it('<error>, <invalid>', async () => {
+      mockNavigation('asdf');
 
-    expect(await findHeading(/oops/i)).toBeInTheDocument();
+      expect(await findHeading(/oops/i)).toBeInTheDocument();
+    });
+
+    it('<admin>, </admin>', () => {
+      mockNavigation('admin');
+
+      expect(screen.getByRole('heading', { name: /admin/i })).toBeInTheDocument();
+    });
   });
 });
