@@ -1,4 +1,4 @@
-import { render, screen, waitForElementToBeRemoved } from '@testing-library/react';
+import { render, waitForElementToBeRemoved } from '@testing-library/react';
 
 import noop from 'lodash/noop';
 import { http, HttpResponse } from 'msw';
@@ -6,16 +6,18 @@ import { http, HttpResponse } from 'msw';
 import ProductDetail from '../../src/components/ProductDetail';
 
 import AllProviders from '../AllProviders';
-import { db } from '../mocks/db';
-import { server } from '../mocks/server';
-import { createProduct, findByText, mockApiDelay, mockApiError } from '../shared/helpers';
+import { mockApiDelay, mockApiError } from '../helpers/api';
+import { mockProduct } from '../helpers/data';
+import { findByText, queryByText } from '../helpers/template';
+import { db } from '../mock-server/db';
+import { server } from '../mock-server';
 
 describe('ProductDetail', () => {
   let productId: number;
   let endpoint: `products/${number}`;
 
   beforeAll(() => {
-    productId = createProduct().id;
+    productId = mockProduct().id;
 
     endpoint = `products/${productId}`;
   });
@@ -65,7 +67,7 @@ describe('ProductDetail', () => {
     afterEach(async () => {
       renderComponent();
 
-      await waitForElementToBeRemoved(() => screen.queryByText(/loading/i));
+      await waitForElementToBeRemoved(() => queryByText(/loading/i));
     });
 
     it('<data loaded>', () => {

@@ -1,16 +1,17 @@
-import { render, screen } from '@testing-library/react';
+import { render } from '@testing-library/react';
 
 import QuantitySelector from '../../src/components/QuantitySelector';
 import { Product } from '../../src/entities';
 import { CartProvider } from '../../src/providers/CartProvider';
 
-import { db } from '../mocks/db';
-import { createProduct, mockUserEvent, queryBtn } from '../shared/helpers';
+import { mockProduct } from '../helpers/data';
+import { getStatus, mockUserEvent, queryBtn } from '../helpers/template';
+import { db } from '../mock-server/db';
 
 describe('QuantitySelector', () => {
   let productMock: Product;
 
-  beforeAll(() => productMock = createProduct());
+  beforeAll(() => productMock = mockProduct());
 
   afterAll(() => db.product.delete({ where: { id: { equals: productMock.id } } }));
 
@@ -27,7 +28,7 @@ describe('QuantitySelector', () => {
   }
 
   function getDecrementBtn(): HTMLElement {
-    return screen.getByRole('button', { name: '-' });
+    return queryBtn('-');
   }
 
   async function decrementQuantity(): Promise<void> {
@@ -35,11 +36,11 @@ describe('QuantitySelector', () => {
   }
 
   function getQuantity(): HTMLElement {
-    return screen.getByRole('status');
+    return getStatus();
   }
 
   function getIncrementBtn(): HTMLElement {
-    return screen.getByRole('button', { name: '+' });
+    return queryBtn('+')
   }
 
   async function incrementQuantity(): Promise<void> {
@@ -47,7 +48,7 @@ describe('QuantitySelector', () => {
   }
 
   function validateAddBtnInDocument(): void {
-    expect(screen.queryByRole('button', { name: /add/i })).toBeInTheDocument();
+    expect(queryBtn(/add/i)).toBeInTheDocument();
   }
 
   it('should render button for adding product to cart', () => {

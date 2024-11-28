@@ -4,7 +4,7 @@ import { Toaster } from 'react-hot-toast';
 
 import ToastDemo from '../../src/components/ToastDemo';
 
-import { mockUserEvent, queryBtn } from '../shared/helpers';
+import {mockUserEvent, queryBtn} from '../helpers/template';
 
 describe('ToastDemo', () => {
   it('should render toast notification', async () => {
@@ -17,7 +17,7 @@ describe('ToastDemo', () => {
 
     await mockUserEvent().click(queryBtn());
 
-    const toast = await screen.getByRole('status');
+    const toast = await screen.findByRole('status');
 
     expect(toast).toBeInTheDocument();
   });

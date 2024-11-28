@@ -1,15 +1,11 @@
-import { render, screen } from '@testing-library/react';
+import { render } from '@testing-library/react';
 
 import UserAccount from '../../src/components/UserAccount';
-import { User } from '../../src/entities';
 
-import { queryBtn } from '../shared/helpers';
+import { mockUser } from '../helpers/data';
+import { getByText, queryBtn } from '../helpers/template';
 
 describe('UserAccount', () => {
-  function mockUser({ isAdmin = false } = {}): User {
-    return { name: 'Justin', isAdmin } as User;
-  }
-
   function queryEditBtn(): HTMLButtonElement {
     return queryBtn();
   }
@@ -20,7 +16,7 @@ describe('UserAccount', () => {
 
       render(<UserAccount user={user} />);
 
-      const el = screen.getByText(user.name);
+      const el = getByText(user.name);
 
       expect(el).toBeInTheDocument();
     });

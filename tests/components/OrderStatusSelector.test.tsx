@@ -5,7 +5,7 @@ import { Mock } from 'vitest';
 
 import OrderStatusSelector from '../../src/components/OrderStatusSelector';
 
-import { mockUserEvent, openCombobox, queryCombobox } from '../shared/helpers';
+import {findOptions, mockUserEvent, openCombobox, queryCombobox} from '../helpers/template';
 
 describe('OrderStatusSelector', () => {
   let onChangeMock:Mock;
@@ -28,7 +28,7 @@ describe('OrderStatusSelector', () => {
     it('<correct statuses>', async () => {
       await openCombobox();
 
-      const options = await screen.findAllByRole('option');
+      const options = await findOptions();
 
       const labels = options.map((item) => item.textContent);
 

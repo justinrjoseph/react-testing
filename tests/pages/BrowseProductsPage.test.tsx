@@ -5,9 +5,10 @@ import { Category, Product } from '../../src/entities';
 import BrowseProducts from '../../src/pages/BrowseProductsPage';
 
 import AllProviders from '../AllProviders';
-import { db } from '../mocks/db';
-import { createCategory, deleteCategories, deleteProducts, mockApiDelay, mockApiError,
-  mockEmptyResponse, mockUserEvent, openCombobox, queryCombobox } from '../shared/helpers';
+import { mockApiDelay, mockApiError, mockEmptyResponse } from '../helpers/api';
+import { mockCategory, deleteMockCategories, deleteMockProducts } from '../helpers/data';
+import { findByText, findOptions, getByText, mockUserEvent, openCombobox, queryByText, queryCombobox } from '../helpers/template';
+import { db } from '../mock-server/db';
 
 describe('BrowseProductsPage', () => {
   let categories: Category[] = [];
@@ -15,7 +16,7 @@ describe('BrowseProductsPage', () => {
 
   beforeAll(() => {
     [1, 2, 3].forEach(() => {
-      const category = createCategory();
+      const category = mockCategory();
       const duplicateCategory = categories.find((item) => item.name === category.name);
 
       if (duplicateCategory) {
@@ -38,10 +39,10 @@ describe('BrowseProductsPage', () => {
 
   afterAll(() => {
     const categoryIds = categories.map(({ id }) => id);
-    deleteCategories(categoryIds);
+    deleteMockCategories(categoryIds);
 
     const productIds = products.map(({ id }) => id);
-    deleteProducts(productIds);
+    deleteMockProducts(productIds);
   });
 
   function renderComponent(): void {
@@ -86,7 +87,7 @@ describe('BrowseProductsPage', () => {
 
       await openCombobox();
 
-      const options = await screen.findAllByRole('option');
+      const options = await findOptions();
 
       const labels = options.map((item) => item.textContent);
 
@@ -99,7 +100,7 @@ describe('BrowseProductsPage', () => {
       await waitForElementToBeRemoved(() => queryProductsSkeleton());
 
       products.forEach((item) => {
-        expect(screen.getByText(item.name)).toBeInTheDocument();
+        expect(getByText(item.name)).toBeInTheDocument();
         expect(screen.getAllByText(new RegExp(item.price.toString())).length)
         .toBeGreaterThanOrEqual(1);
       });
@@ -139,7 +140,7 @@ describe('BrowseProductsPage', () => {
 
     await waitForElementToBeRemoved(queryCategoriesSkeleton);
 
-    expect(screen.queryByText(/error/i)).not.toBeInTheDocument();
+    expect(queryByText(/error/i)).not.toBeInTheDocument();
     expect(queryCombobox()).not.toBeInTheDocument();
   });
 
@@ -151,7 +152,7 @@ describe('BrowseProductsPage', () => {
 
     await waitForElementToBeRemoved(queryProductsSkeleton);
 
-    expect(await screen.findByText(/error/i)).toBeInTheDocument();
+    expect(await findByText('error')).toBeInTheDocument();
   });
 
   describe('--- filter-related', () => {

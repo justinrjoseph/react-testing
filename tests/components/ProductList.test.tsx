@@ -1,22 +1,24 @@
-import { render, screen, waitForElementToBeRemoved } from '@testing-library/react';
+import { render, waitForElementToBeRemoved } from '@testing-library/react';
 
 import noop from 'lodash/noop';
 
 import ProductList from '../../src/components/ProductList';
 
 import AllProviders from '../AllProviders';
-import { createProduct, deleteProducts, findByText, mockApiDelay, mockApiError, mockEmptyResponse } from '../shared/helpers';
+import { mockApiDelay, mockEmptyResponse, mockApiError } from '../helpers/api';
+import { mockProduct, deleteMockProducts } from '../helpers/data';
+import { findByText, findListItems, queryByText } from '../helpers/template';
 
 describe('ProductList', () => {
   let productIds: number[] = [];
 
   beforeAll(() => {
     [1, 2, 3].forEach(() => {
-      productIds = [createProduct().id, ...productIds];
+      productIds = [mockProduct().id, ...productIds];
     });
   });
 
-  afterAll(() => deleteProducts(productIds));
+  afterAll(() => deleteMockProducts(productIds));
 
   function renderComponent(): void {
     render(<ProductList />, { wrapper: AllProviders })
@@ -34,7 +36,7 @@ describe('ProductList', () => {
     it('<list of products>', async () => {
       renderComponent();
 
-      const items = await screen.findAllByRole('listitem');
+      const items = await findListItems();
 
       expect(items.length).toBeGreaterThan(0);
     });
@@ -60,7 +62,7 @@ describe('ProductList', () => {
     afterEach(async () => {
       renderComponent();
 
-      await waitForElementToBeRemoved(() => screen.queryByText(/loading/i));
+      await waitForElementToBeRemoved(() => queryByText(/loading/i));
     });
 
     it('<data loaded>', () => {

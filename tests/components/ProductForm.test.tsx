@@ -6,8 +6,9 @@ import ProductForm from '../../src/components/ProductForm';
 import { Category, Product } from '../../src/entities';
 
 import AllProviders from '../AllProviders';
-import { db } from '../mocks/db';
-import { createCategory, mockUserEvent, openCombobox, queryBtn } from '../shared/helpers';
+import { mockCategory } from '../helpers/data';
+import { getByPlaceholderText, getStatus, mockUserEvent, openCombobox, queryBtn } from '../helpers/template';
+import { db } from '../mock-server/db';
 
 describe('ProductForm', () => {
   let category: Category;
@@ -19,7 +20,7 @@ describe('ProductForm', () => {
   const onSubmitMock = vi.fn();
 
   beforeAll(() => {
-    category = createCategory();
+    category = mockCategory();
     const { id: categoryId } = category;
 
     product = db.product.create({ categoryId });
@@ -62,11 +63,11 @@ describe('ProductForm', () => {
   }
 
   function getNameInput(): HTMLElement {
-    return screen.getByPlaceholderText(/name/i);
+    return getByPlaceholderText(/name/i);
   }
 
   function getPriceInput(): HTMLElement {
-    return screen.getByPlaceholderText(/price/i);
+    return getByPlaceholderText(/price/i);
   }
 
   function getCategoriesDropdown(): HTMLElement {
@@ -177,7 +178,7 @@ describe('ProductForm', () => {
 
       expect(toast.error).toHaveBeenCalledWith("An unexpected error occurred");
 
-      expect(screen.getByRole('status')).toHaveTextContent(/unexpected error/i);
+      expect(getStatus()).toHaveTextContent(/unexpected error/i);
     });
   });
 

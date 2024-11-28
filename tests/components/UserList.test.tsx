@@ -3,12 +3,14 @@ import { render, screen } from '@testing-library/react';
 import UserList from '../../src/components/UserList';
 import { User } from '../../src/entities';
 
+import { getByText } from '../helpers/template';
+
 describe('UserList', () => {
   describe('should render <x>', () => {
     it('<messaging when no users>', () => {
       render(<UserList users={[]} />);
 
-      expect(screen.getByText(/no users/i)).toBeInTheDocument();
+      expect(getByText(/no users/i)).toBeInTheDocument();
     });
 
     it('<list of users>', () => {

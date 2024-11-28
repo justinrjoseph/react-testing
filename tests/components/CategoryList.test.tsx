@@ -1,10 +1,12 @@
-import { render, screen, waitForElementToBeRemoved } from '@testing-library/react';
+import { render, waitForElementToBeRemoved } from '@testing-library/react';
 
 import { Category } from '../../src/entities';
 import CategoryList from '../../src/components/CategoryList';
 
 import AllProviders from '../AllProviders';
-import { createCategory, deleteCategories, findByText, mockApiDelay, mockApiError } from '../shared/helpers';
+import { mockApiDelay, mockApiError } from '../helpers/api';
+import {mockCategory, deleteMockCategories} from '../helpers/data';
+import { findByText, getByText } from '../helpers/template';
 
 describe('CategoryList', () => {
   function renderComponent(): void {
@@ -23,15 +25,15 @@ describe('CategoryList', () => {
     it('categories', async () => {
       let categories: Category[] = [];
 
-      [1, 2, 3].forEach(() => categories = [createCategory(), ...categories]);
+      [1, 2, 3].forEach(() => categories = [mockCategory(), ...categories]);
 
       renderComponent();
 
-      await waitForElementToBeRemoved(() => screen.getByText(/loading/i));
+      await waitForElementToBeRemoved(() => getByText(/loading/i));
 
-      categories.forEach(({ name }) => expect(screen.getByText(name)).toBeInTheDocument());
+      categories.forEach(({ name }) => expect(getByText(name)).toBeInTheDocument());
 
-      deleteCategories(categories.map(({ id }) => id));
+      deleteMockCategories(categories.map(({ id }) => id));
     });
 
     it('error', async () => {

@@ -1,10 +1,12 @@
-import { render, RenderResult, screen } from '@testing-library/react';
+import { render, RenderResult } from '@testing-library/react';
 
 import Label from '../../src/components/Label';
 import en from "../../src/providers/language/data/en.json";
 import es from "../../src/providers/language/data/es.json";
 import { LanguageProvider } from '../../src/providers/language/LanguageProvider';
 import { Language } from '../../src/providers/language/type';
+
+import { getByText } from '../helpers/template';
 
 const languages:[Language, Language] = ['en', 'es'];
 
@@ -31,7 +33,7 @@ describe('Label', () => {
       it.each(englishLabels)('<$label>', ({ key, label, language }) => {
         renderComponent({ key, language });
 
-        expect(screen.getByText(label)).toBeInTheDocument();
+        expect(getByText(label)).toBeInTheDocument();
       });
     });
 
@@ -39,7 +41,7 @@ describe('Label', () => {
       it.each(spanishLabels)('<$label>', ({ key, label, language }) => {
         renderComponent({ key, language });
 
-        expect(screen.getByText(label)).toBeInTheDocument();
+        expect(getByText(label)).toBeInTheDocument();
       });
     });
 

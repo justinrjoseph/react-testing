@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 
 import TermsAndConditions from '../../src/components/TermsAndConditions';
 
-import { getHeading, mockUserEvent, queryBtn } from '../shared/helpers';
+import {getHeading, mockUserEvent, queryBtn} from '../helpers/template';
 
 describe('TermsAndConditions', () => {
   beforeEach(() => render(<TermsAndConditions />));

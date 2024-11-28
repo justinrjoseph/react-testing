@@ -1,15 +1,15 @@
-import { render, screen } from '@testing-library/react';
+import { render } from '@testing-library/react';
 
 import SearchBox from '../../src/components/SearchBox';
 
 import { Mock } from 'vitest';
-import {mockUserEvent} from '../shared/helpers';
+import { getByPlaceholderText, mockUserEvent } from '../helpers/template';
 
 describe('SearchBox', () => {
   let onChangeMock:Mock;
 
   function getInput(): HTMLInputElement {
-    return screen.getByPlaceholderText(/search/i);
+    return getByPlaceholderText(/search/i) as HTMLInputElement;
   }
 
   beforeEach(() => {

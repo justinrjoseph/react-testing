@@ -1,8 +1,8 @@
-import { render, screen } from '@testing-library/react';
+import { render } from '@testing-library/react';
 
 import Greet from '../../src/components/Greet';
 
-import { getHeading } from '../shared/helpers';
+import { getHeading, queryBtn } from '../helpers/template';
 
 describe('Greet', () => {
   describe('should render <x>', () => {
@@ -17,9 +17,7 @@ describe('Greet', () => {
     it('<login button>', () => {
       render(<Greet />);
 
-      const el = screen.getByRole('button');
-
-      expect(el).toHaveTextContent(/login/i);
+      expect(queryBtn()).toHaveTextContent(/login/i);
     });
   });
 });

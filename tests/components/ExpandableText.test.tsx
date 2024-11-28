@@ -4,7 +4,7 @@ import noop from 'lodash/noop';
 
 import ExpandableText from '../../src/components/ExpandableText';
 
-import { mockUserEvent as mockAppUser, queryBtn } from '../shared/helpers';
+import { getByText, mockUserEvent as mockAppUser, queryBtn } from '../helpers/template';
 
 describe('ExpandableText', () => {
   const limit = 255;
@@ -19,7 +19,7 @@ describe('ExpandableText', () => {
 
       render(<ExpandableText text={text} />)
 
-      expect(screen.getByText(text)).toBeInTheDocument();
+      expect(getByText(text)).toBeInTheDocument();
       expect(queryBtn()).not.toBeInTheDocument();
     });
 
@@ -30,8 +30,7 @@ describe('ExpandableText', () => {
 
       describe('<truncated text>', () => {
         afterEach(() => {
-          expect(screen.getByText(`${text.substring(0, limit)}...`))
-            .toBeInTheDocument();
+          expect(getByText(`${text.substring(0, limit)}...`)).toBeInTheDocument();
 
           expect(queryBtn()).toHaveTextContent(/more/i);
         });
@@ -53,7 +52,7 @@ describe('ExpandableText', () => {
 
         await mockAppUser().click(button);
 
-        expect(screen.getByText(text));
+        expect(getByText(text));
         expect(screen.getByRole('article')).not.toHaveTextContent('...');
 
         expect(button).toHaveTextContent(/less/i);
