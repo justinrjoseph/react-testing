@@ -49,10 +49,38 @@ describe('Router', () => {
       expect(await findHeading(/oops/i)).toBeInTheDocument();
     });
 
-    it('<admin>, </admin>', () => {
-      mockNavigation('admin');
+    describe('--- admin-related ---', () => {
+      function mockAdminProductsNavigation(path?: string): void {
+        mockNavigation(`admin/products/${path || ''}`);
+      }
 
-      expect(screen.getByRole('heading', { name: /admin/i })).toBeInTheDocument();
+      it('<admin>, </admin>', () => {
+        mockNavigation('admin');
+
+        expect(getHeading(/admin/i)).toBeInTheDocument();
+      });
+
+      it('<admin products>, </admin/products>', () => {
+        mockAdminProductsNavigation();
+
+        expect(getHeading(/products/i)).toBeInTheDocument();
+      });
+
+      it('<new product>, </admin/products/new>', () => {
+        mockAdminProductsNavigation('new');
+
+        expect(getHeading(/new product/i)).toBeInTheDocument();
+      });
+
+      it('<edit product>, </admin/products/edit>', async () => {
+        const product = mockProduct();
+
+        mockAdminProductsNavigation(`${product.id}/edit`);
+
+        expect(await findHeading(/edit product/i)).toBeInTheDocument();
+
+        deleteMockProduct(product.id);
+      });
     });
   });
 });
