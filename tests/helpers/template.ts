@@ -17,8 +17,8 @@ export function mockAuthStatus(state: AuthStatus): void {
   });
 }
 
-export function getHeading(): HTMLHeadingElement {
-  return screen.getByRole('heading');
+export function getHeading(name?: RegExp | string): HTMLHeadingElement {
+  return screen.getByRole('heading', name ? { name } : {});
 }
 
 export function getByPlaceholderText(content: RegExp): HTMLElement {
