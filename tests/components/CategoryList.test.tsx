@@ -1,18 +1,14 @@
 import { render, screen, waitForElementToBeRemoved } from '@testing-library/react';
 
 import { Category } from '../../src/entities';
-import ReduxProvider from '../../src/providers/ReduxProvider';
 import CategoryList from '../../src/components/CategoryList';
 
+import AllProviders from '../AllProviders';
 import { createCategory, deleteCategories, findByText, mockApiDelay, mockApiError } from '../shared/helpers';
 
 describe('CategoryList', () => {
   function renderComponent(): void {
-    render(
-      <ReduxProvider>
-        <CategoryList />
-      </ReduxProvider>
-    );
+    render(<CategoryList /> , { wrapper: AllProviders });
   }
 
   describe('should render', () => {
