@@ -1,23 +1,23 @@
 import { render, screen, waitForElementToBeRemoved } from '@testing-library/react';
 
 import noop from 'lodash/noop';
-import { delay, http, HttpResponse } from 'msw';
+import { http, HttpResponse } from 'msw';
 
 import ProductDetail from '../../src/components/ProductDetail';
 
 import AllProviders from '../AllProviders';
 import { db } from '../mocks/db';
 import { server } from '../mocks/server';
-import { findByText, mockApiError } from '../shared/helpers';
+import { createProduct, findByText, mockApiDelay, mockApiError } from '../shared/helpers';
 
 describe('ProductDetail', () => {
   let productId: number;
-  let endpoint: `/products/${number}`;
+  let endpoint: `products/${number}`;
 
   beforeAll(() => {
-    productId = db.product.create().id;
+    productId = createProduct().id;
 
-    endpoint = `/products/${productId}`;
+    endpoint = `products/${productId}`;
   });
 
   afterAll(() => db.product.delete({ where: { id: { equals: productId } } }));
@@ -28,10 +28,7 @@ describe('ProductDetail', () => {
 
   describe('should render <x>', () => {
     it('<loading indicator>', async () => {
-      server.use(http.get(endpoint, async () => {
-        await delay();
-        return HttpResponse.json([])
-      }));
+      mockApiDelay('products');
 
       renderComponent();
 
@@ -76,7 +73,7 @@ describe('ProductDetail', () => {
     });
 
     it('<API call failed>', () => {
-      mockApiError(endpoint);
+      mockApiError('products');
     });
   });
 });

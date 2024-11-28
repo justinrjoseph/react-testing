@@ -5,12 +5,12 @@ import { Product } from '../../src/entities';
 import { CartProvider } from '../../src/providers/CartProvider';
 
 import { db } from '../mocks/db';
-import { mockUserEvent, queryBtn } from '../shared/helpers';
+import { createProduct, mockUserEvent, queryBtn } from '../shared/helpers';
 
 describe('QuantitySelector', () => {
   let productMock: Product;
 
-  beforeAll(() => productMock = db.product.create());
+  beforeAll(() => productMock = createProduct());
 
   afterAll(() => db.product.delete({ where: { id: { equals: productMock.id } } }));
 

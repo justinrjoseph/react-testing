@@ -1,15 +1,13 @@
 import { faker } from '@faker-js/faker';
 import { render, screen, waitForElementToBeRemoved } from '@testing-library/react';
 
-import { delay, http, HttpResponse } from 'msw';
-
 import { Category, Product } from '../../src/entities';
 import BrowseProducts from '../../src/pages/BrowseProductsPage';
 
 import AllProviders from '../AllProviders';
 import { db } from '../mocks/db';
-import { server } from '../mocks/server';
-import { mockApiError, mockEmptyResponse, mockUserEvent, openCombobox, queryCombobox } from '../shared/helpers';
+import { createCategory, deleteCategories, deleteProducts, mockApiDelay, mockApiError,
+  mockEmptyResponse, mockUserEvent, openCombobox, queryCombobox } from '../shared/helpers';
 
 describe('BrowseProductsPage', () => {
   let categories: Category[] = [];
@@ -17,7 +15,7 @@ describe('BrowseProductsPage', () => {
 
   beforeAll(() => {
     [1, 2, 3].forEach(() => {
-      const category = db.category.create();
+      const category = createCategory();
       const duplicateCategory = categories.find((item) => item.name === category.name);
 
       if (duplicateCategory) {
@@ -40,10 +38,10 @@ describe('BrowseProductsPage', () => {
 
   afterAll(() => {
     const categoryIds = categories.map(({ id }) => id);
-    db.category.deleteMany({ where: { id: { in: categoryIds } } });
+    deleteCategories(categoryIds);
 
     const productIds = products.map(({ id }) => id);
-    db.product.deleteMany({ where: { id: { in: productIds } } });
+    deleteProducts(productIds);
   });
 
   function renderComponent(): void {
@@ -60,13 +58,6 @@ describe('BrowseProductsPage', () => {
 
   describe('should render <x>', () => {
     describe('<loading skeletons> for <y>', () => {
-      function mockApiDelay(endpoint: 'categories' | 'products'): void {
-        server.use(http.get(`/${endpoint}`, async () => {
-          await delay();
-          return HttpResponse.json([]);
-        }));
-      }
-
       function getProgressBar(target: 'categories' | 'products'): HTMLElement {
         return screen.getByRole('progressbar', { name: new RegExp(target, 'i') });
       }
@@ -118,7 +109,7 @@ describe('BrowseProductsPage', () => {
   describe('should not render loading skeletons after <x>', () => {
     describe('<y> loaded', () => {
       beforeEach(() => {
-        mockEmptyResponse('/categories');
+        mockEmptyResponse('categories');
 
         renderComponent();
       });
@@ -133,8 +124,8 @@ describe('BrowseProductsPage', () => {
     });
 
     it('<API calls failed>', () => {
-      mockApiError('/categories');
-      mockApiError('/products');
+      mockApiError('categories');
+      mockApiError('products');
 
       expect(queryCategoriesSkeleton()).not.toBeInTheDocument();
       expect(queryProductsSkeleton()).not.toBeInTheDocument();
@@ -142,7 +133,7 @@ describe('BrowseProductsPage', () => {
   });
 
   it('should not render error if request for categories fails', async () => {
-    mockApiError('/categories');
+    mockApiError('categories');
 
     renderComponent();
 
@@ -153,8 +144,8 @@ describe('BrowseProductsPage', () => {
   });
 
   it('should render error if request for products fails', async () => {
-    mockEmptyResponse('/categories');
-    mockApiError('/products');
+    mockEmptyResponse('categories');
+    mockApiError('products');
 
     renderComponent();
 

@@ -1,13 +1,13 @@
 import { render, screen } from '@testing-library/react';
 
-import toast, {Toaster} from 'react-hot-toast';
+import toast, { Toaster } from 'react-hot-toast';
 
 import ProductForm from '../../src/components/ProductForm';
 import { Category, Product } from '../../src/entities';
 
 import AllProviders from '../AllProviders';
 import { db } from '../mocks/db';
-import { mockUserEvent, openCombobox, queryBtn } from '../shared/helpers';
+import { createCategory, mockUserEvent, openCombobox, queryBtn } from '../shared/helpers';
 
 describe('ProductForm', () => {
   let category: Category;
@@ -19,7 +19,7 @@ describe('ProductForm', () => {
   const onSubmitMock = vi.fn();
 
   beforeAll(() => {
-    category = db.category.create();
+    category = createCategory();
     const { id: categoryId } = category;
 
     product = db.product.create({ categoryId });

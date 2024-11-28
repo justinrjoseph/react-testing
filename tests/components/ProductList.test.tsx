@@ -1,28 +1,22 @@
 import { render, screen, waitForElementToBeRemoved } from '@testing-library/react';
 
 import noop from 'lodash/noop';
-import { http, HttpResponse, delay } from 'msw';
 
 import ProductList from '../../src/components/ProductList';
 
 import AllProviders from '../AllProviders';
-import { db } from '../mocks/db';
-import { server } from '../mocks/server';
-import { findByText, mockApiError, mockEmptyResponse } from '../shared/helpers';
+import { createProduct, deleteProducts, findByText, mockApiDelay, mockApiError, mockEmptyResponse } from '../shared/helpers';
 
 describe('ProductList', () => {
   let productIds: number[] = [];
-  const endpoint = '/products';
 
   beforeAll(() => {
     [1, 2, 3].forEach(() => {
-      const product = db.product.create();
-
-      productIds = [product.id, ...productIds];
+      productIds = [createProduct().id, ...productIds];
     });
   });
 
-  afterAll(() => db.product.deleteMany({ where: { id: { in: productIds } } }));
+  afterAll(() => deleteProducts(productIds));
 
   function renderComponent(): void {
     render(<ProductList />, { wrapper: AllProviders })
@@ -30,10 +24,7 @@ describe('ProductList', () => {
 
   describe('should render <x>', () => {
     it('<loading indicator>', async () => {
-      server.use(http.get(endpoint, async () => {
-        await delay();
-        return HttpResponse.json([]);
-      }));
+      mockApiDelay('products');
 
       renderComponent();
 
@@ -49,7 +40,7 @@ describe('ProductList', () => {
     });
 
     it('<messaging when no products available>', async () => {
-      mockEmptyResponse(endpoint);
+      mockEmptyResponse('products');
 
       renderComponent();
 
@@ -57,7 +48,7 @@ describe('ProductList', () => {
     });
 
     it(`<error> when API call fails`, async () => {
-      mockApiError(endpoint);
+      mockApiError('products');
 
       renderComponent();
 
@@ -77,7 +68,7 @@ describe('ProductList', () => {
     });
 
     it('<API call failed>', () => {
-      mockApiError(endpoint);
+      mockApiError('products');
     });
   });
 });
